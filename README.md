@@ -20,6 +20,8 @@ First, you need to create a Telegram bot. Talk with the [BotFather](https://t.me
 
 Once you get the TOKEN, run `python setup.py YOUR_TOKEN`.
 
+The bot will automatically be running at the end of setup.
+
 If you want to use your own TELEGRAPH_TOKEN, feel free to replace the file.
 
 ## notes
