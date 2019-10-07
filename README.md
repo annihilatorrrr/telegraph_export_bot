@@ -14,6 +14,10 @@ Feedback / feature requests are welcomed at [@dushufenxiang_chat](https://t.me/d
 
 Debut info is recorded in [@bot_debug](https://t.me/bot_debug).
 
+## feature
+
+Exporter can edit the telegraph page afterwards.
+
 ## how to install
 
 First, you need to create a Telegram bot. Talk with the [BotFather](https://t.me/botfather) and ask it for a bot (and its respective token)
@@ -27,3 +31,5 @@ If you want to use your own TELEGRAPH_TOKEN, feel free to replace the file.
 ## notes
 
 You are also welcome to use my [@export_telegraph_bot](https://t.me/export_telegraph_bot) without create your own bot.
+
+Currently, support wechat article only.
