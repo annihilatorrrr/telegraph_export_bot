@@ -1,6 +1,5 @@
 import os
 import sys
-from html_telegraph_poster import TelegraphPoster
 
 def setup(token):
 	RUN_COMMAND = 'nohup python3 telegraph_bot.py &'
@@ -30,6 +29,7 @@ def setup(token):
 		pass
 
 	if not TELEGRAPH_TOKEN:
+		from html_telegraph_poster import TelegraphPoster
 		t = TelegraphPoster()
 		r = t.create_api_token('dushufenxiang', 'dushufenxiang', 'https://t.me/dushufenxiang_chat')
 		with open('TELEGRAPH_TOKEN', 'w') as f:
