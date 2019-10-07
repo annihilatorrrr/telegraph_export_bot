@@ -45,6 +45,6 @@ def setup(token):
 
 if __name__ == "__main__":
 	if len(sys.argv) > 1:
-    	setup(sys.argv[1])
-    else:
-    	setup('')
+		setup(sys.argv[1])
+	else:
+		setup('')
