@@ -11,6 +11,10 @@ def setup(token):
 	except:
 		pass
 
+	if !TOKEN and !token:
+		print('ERROR: please run as `python setup.py YOUR_TOKEN`.')
+		return
+
 	if TOKEN != token:
 		PIP_COMMAND = 'pip3 install -r requirements.txt'
 		os.system(PIP_COMMAND)
@@ -34,10 +38,13 @@ def setup(token):
 		r = t.create_api_token('dushufenxiang', 'dushufenxiang', 'https://t.me/dushufenxiang_chat')
 		with open('TELEGRAPH_TOKEN', 'w') as f:
 			f.write(r['access_token'])
-		print(r['auth_url'])
+		print('Please use this url to login to your telegraph account on your browser. Link will expire in a few minutes.' + r['auth_url'])
 
 	return os.system(RUN_COMMAND)
 
 
 if __name__ == "__main__":
-    setup(sys.argv[1])
+	if len(sys.argv) > 1:
+    	setup(sys.argv[1])
+    else:
+    	setup('')
