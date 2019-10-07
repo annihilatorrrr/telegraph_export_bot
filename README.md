@@ -16,7 +16,7 @@ Debug info is recorded in [@bot_debug](https://t.me/bot_debug).
 
 ## feature
 
-Exporter can edit the telegraph page afterwards.
+Owner can edit the telegraph page afterwards.
 
 ## how to install
 
