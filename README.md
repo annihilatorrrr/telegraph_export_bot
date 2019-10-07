@@ -10,6 +10,10 @@ Feedback / feature requests are welcomed at [@dushufenxiang_chat](https://t.me/d
 
 Send link to the bot, and bot will reply a telegraph link with extracted article.
 
+Feedback / feature requests are welcomed at [@dushufenxiang_chat](https://t.me/dushufenxiang_chat).
+
+Debut info is recorded in [@bot_debug](https://t.me/bot_debug).
+
 ## how to install
 
 First, you need to create a Telegram bot. Talk with the [BotFather](https://t.me/botfather) and ask it for a bot (and its respective token)
