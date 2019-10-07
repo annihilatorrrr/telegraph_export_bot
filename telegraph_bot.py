@@ -30,23 +30,50 @@ def WeChat_to_Telegraph(URL):
 		b = soup.new_tag("figure")
 		b.append(soup.new_tag("img", src = img["data-src"]))
 		img.replace_with(b)
+	for section in g.find_all("section"):
+		b = soup.new_tag("p")
+		b.append(BeautifulSoup(str(section)))
+		section.replace_with(b)
+	print(str(g))
 	result = poster.post(title = title, author = author, author_url = URL, text = str(g)[:80000])
 	return result["url"]
+
+def getAuthor(msg):
+	result = ''
+	user = msg.from_user
+	if user.first_name:
+		result += ' ' + user.first_name
+	if user.last_name:
+		result += ' ' + user.last_name
+	if user.username:
+		result += '(@' + user.username + ')'
+	return result
+
+def getTelegraph(URL):
+	if "mp.weixin.qq.com" in URL:
+		return WeChat_to_Telegraph(URL)
+	return WeChat_to_Telegraph(URL)
+
+def trimURL(URL):
+	if not '://' in URL:
+		return URL
+	loc = URL.find('://')
+	return URL[loc + 3:]
 
 def exportImp(update, context):
 	msg = update.message
 	for item in msg.entities:
 		if (item["type"] == "url"):
 			URL = msg.text[item["offset"]:][:item["length"]]
-			if (URL.startswith("https://mp.weixin.qq.com/s")):
-				u = WeChat_to_Telegraph(URL)
-				msg.reply_text(u)
-				r = context.bot.send_message(DEBUG_GROUP, u)
+			u = trimURL(getTelegraph(URL))
+			msg.reply_text(u)
+			r = context.bot.send_message(chat_id=DEBUG_GROUP, text=getAuthor(msg) + ': ' + u)
 
 def export(update, context):
 	try:
 		exportImp(update, context)
 	except Exception as e:
+		print("exception")
 		print(e)
 
 with open('TOKEN') as f:
