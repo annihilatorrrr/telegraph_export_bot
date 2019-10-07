@@ -11,7 +11,7 @@ def setup(token):
 	except:
 		pass
 
-	if !TOKEN and !token:
+	if not TOKEN and not token:
 		print('ERROR: please run as `python setup.py YOUR_TOKEN`.')
 		return
 
