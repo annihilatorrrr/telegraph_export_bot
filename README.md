@@ -12,7 +12,7 @@ Send link to the bot, and bot will reply a telegraph link with extracted article
 
 Feedback / feature requests are welcomed at [@dushufenxiang_chat](https://t.me/dushufenxiang_chat).
 
-Debut info is recorded in [@bot_debug](https://t.me/bot_debug).
+Debug info is recorded in [@bot_debug](https://t.me/bot_debug).
 
 ## feature
 
