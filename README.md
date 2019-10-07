@@ -1,4 +1,4 @@
-# telegraph_export_bot [DEVELOPMENT IN PROGRESS]
+# telegraph_export_bot
 
 Export webpage to Telegraph.
 
