@@ -2,9 +2,6 @@
 # -*- coding: utf-8 -*-
 
 from telegram.ext import Updater, MessageHandler, Filters
-from telegram import InputMediaPhoto, File
-from PIL import Image
-import io
 
 import requests
 from bs4 import BeautifulSoup
