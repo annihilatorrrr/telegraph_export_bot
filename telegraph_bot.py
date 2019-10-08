@@ -35,6 +35,22 @@ def WeChat_to_Telegraph(URL):
 	result = poster.post(title = title, author = author, author_url = URL, text = str(g)[:80000])
 	return result["url"]
 
+def stackoverflow2Telegraph(URL):
+	r = requests.get(URL)
+	soup = BeautifulSoup(r.text, 'html.parser')
+	title = soup.find("title").text.strip()
+	title = title.replace('- Stack Overflow', '').strip()
+	author = 'Stack Overflow'
+	g = soup.find("div", class_ = "answercell")
+	g = g.find("div", class_ = "post-text")
+	for section in g.find_all("section"):
+		b = soup.new_tag("p")
+		b.append(BeautifulSoup(str(section)))
+		section.replace_with(b)
+	
+	result = poster.post(title = title, author = author, author_url = URL, text = str(g)[:80000])
+	return result["url"]
+
 def getAuthor(msg):
 	result = ''
 	user = msg.from_user
@@ -49,6 +65,8 @@ def getAuthor(msg):
 def getTelegraph(URL):
 	if "mp.weixin.qq.com" in URL:
 		return WeChat_to_Telegraph(URL)
+	if "stackoverflow.com" in URL:
+		return stackoverflow2Telegraph(URL)
 	return WeChat_to_Telegraph(URL)
 
 def trimURL(URL):
