@@ -26,7 +26,7 @@ def WeChat_to_Telegraph(URL):
 	for img in g.find_all("img"):
 		b = soup.new_tag("figure")
 		b.append(soup.new_tag("img", src = img["data-src"]))
-		img.replace_with(b)
+		img.append(b)
 	for section in g.find_all("section"):
 		b = soup.new_tag("p")
 		b.append(BeautifulSoup(str(section)))
@@ -62,11 +62,37 @@ def getAuthor(msg):
 		result += '(@' + user.username + ')'
 	return result
 
+def bbc2TG(URL):
+	r = requests.get(URL)
+	soup = BeautifulSoup(r.text, 'html.parser')
+	title = soup.find("h1").text.strip()
+	author = 'BBC'
+	g = soup.find("div", class_ = "story-body__inner")
+	for elm in g.find_all('span', class_="off-screen"):
+		elm.decompose()
+	for elm in g.find_all('ul', class_="story-body__unordered-list"):
+		elm.decompose()
+	for elm in g.find_all('span', class_="story-image-copyright"):
+		elm.decompose()
+	for img in g.find_all("div", class_="js-delayed-image-load"):
+		b = soup.new_tag("figure", width=img['data-width'], height=img['data-height'])
+		b.append(soup.new_tag("img", src = img["data-src"], width=img['data-width'], height=img['data-height']))
+		img.replace_with(b)
+	for section in g.find_all("section"):
+		b = soup.new_tag("p")
+		b.append(BeautifulSoup(str(section)))
+		section.replace_with(b)
+	
+	result = poster.post(title = title, author = author, author_url = URL, text = str(g)[:80000])
+	return result["url"]
+
 def getTelegraph(URL):
 	if "mp.weixin.qq.com" in URL:
 		return WeChat_to_Telegraph(URL)
 	if "stackoverflow.com" in URL:
 		return stackoverflow2Telegraph(URL)
+	if "bbc.com" in URL:
+		return bbc2TG(URL)
 	return WeChat_to_Telegraph(URL)
 
 def trimURL(URL):

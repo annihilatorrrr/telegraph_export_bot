@@ -32,4 +32,8 @@ If you want to use your own TELEGRAPH_TOKEN, feel free to replace the file.
 
 You are also welcome to use my [@export_telegraph_bot](https://t.me/export_telegraph_bot) without create your own bot.
 
-Currently, support wechat, stackoverflow only.
+Currently, support:
+
+* Wechat
+* BBC
+* StackOverflow
