@@ -171,6 +171,8 @@ def exportImp(update, context):
 	for item in msg.entities:
 		if (item["type"] == "url"):
 			URL = msg.text[item["offset"]:][:item["length"]]
+			if not '://' in URL:
+				URL = "https://" + URL
 			u = trimURL(getTelegraph(msg, URL))
 			msg.reply_text(u)
 			r = context.bot.send_message(chat_id=DEBUG_GROUP, text=getAuthor(msg) + ': ' + u)
