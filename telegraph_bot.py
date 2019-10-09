@@ -16,8 +16,11 @@ class Article(object):
 		self.author = author
 		self.text = text
 
-with open('TELEGRAPH_TOKENS') as f:
-	TELEGRAPH_TOKENS = json.load(f)
+try:
+	with open('TELEGRAPH_TOKENS') as f:
+		TELEGRAPH_TOKENS = json.load(f)
+except:
+	TELEGRAPH_TOKENS = {}
 
 with open('TELEGRAPH_TOKENS', 'w') as f:
 	f.write(json.dumps(TELEGRAPH_TOKENS, sort_keys=True, indent=2))
