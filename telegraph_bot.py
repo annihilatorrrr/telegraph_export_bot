@@ -22,8 +22,9 @@ try:
 except:
 	TELEGRAPH_TOKENS = {}
 
-with open('TELEGRAPH_TOKENS', 'w') as f:
-	f.write(json.dumps(TELEGRAPH_TOKENS, sort_keys=True, indent=2))
+def saveTelegraphTokens():
+	with open('TELEGRAPH_TOKENS', 'w') as f:
+		f.write(json.dumps(TELEGRAPH_TOKENS, sort_keys=True, indent=2))
 
 def getPoster(msg, id, forceMessageAuthUrl=False):
 	if str(id) in TELEGRAPH_TOKENS:
