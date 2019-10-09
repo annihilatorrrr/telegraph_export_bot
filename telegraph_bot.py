@@ -43,9 +43,7 @@ def msgAuthUrl(msg, p):
 	r = p.get_account_info(fields=['auth_url'])
 	msg.reply_text('Use this URL to login in 5 minutes: ' + r['auth_url'])
 
-def wechat2Article(URL):
-	r = requests.get(URL)
-	soup = BeautifulSoup(r.text, 'html.parser')
+def wechat2Article(soup):
 	title = soup.find("h2").text.strip()
 	author = soup.find("a", {"id" : "js_name"}).text.strip()
 	g = soup.find("div", {"id" : "js_content"})
@@ -60,12 +58,9 @@ def wechat2Article(URL):
 	return Article(title, author,str(g)[:80000])
 	
 
-def stackoverflow2Article(URL):
-	r = requests.get(URL)
-	soup = BeautifulSoup(r.text, 'html.parser')
+def stackoverflow2Article(soup):
 	title = soup.find("title").text.strip()
 	title = title.replace('- Stack Overflow', '').strip()
-	author = 'Stack Overflow'
 	g = soup.find("div", class_ = "answercell")
 	g = g.find("div", class_ = "post-text")
 	for section in g.find_all("section"):
@@ -73,7 +68,7 @@ def stackoverflow2Article(URL):
 		b.append(BeautifulSoup(str(section)))
 		section.replace_with(b)
 	
-	return Article(title, author,str(g)[:80000])
+	return Article(title, 'Stack Overflow', str(g)[:80000])
 
 def getAuthor(msg):
 	result = ''
@@ -86,11 +81,8 @@ def getAuthor(msg):
 		result += '(@' + user.username + ')'
 	return result
 
-def bbc2Article(URL):
-	r = requests.get(URL)
-	soup = BeautifulSoup(r.text, 'html.parser')
+def bbc2Article(soup):
 	title = soup.find("h1").text.strip()
-	author = 'BBC'
 	g = soup.find("div", class_ = "story-body__inner")
 	for elm in g.find_all('span', class_="off-screen"):
 		elm.decompose()
@@ -106,16 +98,46 @@ def bbc2Article(URL):
 		b = soup.new_tag("p")
 		b.append(BeautifulSoup(str(section)))
 		section.replace_with(b)
-	return Article(title, author,str(g)[:80000])
+	return Article(title, 'BBC', str(g)[:80000])
+
+NYT_ADS = '《纽约时报》推出每日中文简报'
+def nyt2Article(soup):
+	title = soup.find("meta", {"property": "twitter:title"})['content'].strip()
+	author = soup.find("meta", {"name": "byl"})['content'].strip()
+	g = soup.find("article")
+	for link in g.find_all("a"):
+		if not '英文版' in link.text:
+			link.replace_with(link.text)
+	for item in g.find_all("div", class_="article-header"):
+		item.decompose()
+	for item in g.find_all("div", class_="article-paragraph"):
+		if item.text and NYT_ADS in item.text:
+			item.decompose()
+		elif item.text == '广告':
+			item.decompose()
+		else:
+			wrapper = soup.new_tag("p")
+			wrapper.append(BeautifulSoup(str(item), features="lxml"))
+			item.replace_with(wrapper)
+	for item in g.find_all("footer", class_="author-info"):
+		for subitem in item.find_all("a"):
+			if subitem.text and "英文版" in subitem.text:
+				item.replace_with(subitem)
+				break
+	return Article(title, author + ' - NYT', str(g)[:80000])
 
 def getArticle(URL):
+	r = requests.get(URL)
+	soup = BeautifulSoup(r.text, 'html.parser')
 	if "mp.weixin.qq.com" in URL:
-		article =  wechat2Article(URL)
+		return wechat2Article(soup)
 	if "stackoverflow.com" in URL:
-		article = stackoverflow2Article(URL)
+		return stackoverflow2Article(soup)
 	if "bbc.com" in URL:
-		article = bbc2Article(URL)
-	return bbc2Article(URL)
+		return bbc2Article(soup)
+	if "nytimes.com" in URL:
+		return nyt2Article(soup)
+	return bbc2Article(soup)
 
 def getTelegraph(msg, URL):
 	usr_id = msg.from_user.id
@@ -143,8 +165,8 @@ def export(update, context):
 	try:
 		exportImp(update, context)
 	except Exception as e:
-		print("exception")
 		print(e)
+		tb.print_exc()
 
 def command(update, context):
 	try:
@@ -152,7 +174,7 @@ def command(update, context):
 			('token' in update.message.text.lower() or 'auth' in update.message.text.lower()):
 			id = update.message.from_user.id
 			return getPoster(update.message, id, forceMessageAuthUrl=True)
-		return update.message.reply_text('Feed me link, currently support wechat, bbc, and stackoverflow')
+		return update.message.reply_text('Feed me link, currently support wechat, bbc, stackoverflow, nyt')
 	except Exception as e:
 		print(e)
 		tb.print_exc()
