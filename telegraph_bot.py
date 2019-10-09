@@ -53,7 +53,7 @@ def wechat2Article(soup):
 		img.append(b)
 	for section in g.find_all("section"):
 		b = soup.new_tag("p")
-		b.append(BeautifulSoup(str(section)))
+		b.append(BeautifulSoup(str(section), features="lxml"))
 		section.replace_with(b)
 	return Article(title, author, g)
 	
@@ -65,7 +65,7 @@ def stackoverflow2Article(soup):
 	g = g.find("div", class_ = "post-text")
 	for section in g.find_all("section"):
 		b = soup.new_tag("p")
-		b.append(BeautifulSoup(str(section)))
+		b.append(BeautifulSoup(str(section), features="lxml"))
 		section.replace_with(b)
 	
 	return Article(title, 'Stack Overflow', g)
@@ -96,7 +96,7 @@ def bbc2Article(soup):
 		img.replace_with(b)
 	for section in g.find_all("section"):
 		b = soup.new_tag("p")
-		b.append(BeautifulSoup(str(section)))
+		b.append(BeautifulSoup(str(section), features="lxml"))
 		section.replace_with(b)
 	return Article(title, 'BBC', g)
 
