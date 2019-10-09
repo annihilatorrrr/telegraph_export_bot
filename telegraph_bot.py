@@ -55,7 +55,7 @@ def wechat2Article(soup):
 		b = soup.new_tag("p")
 		b.append(BeautifulSoup(str(section)))
 		section.replace_with(b)
-	return Article(title, author,str(g)[:80000])
+	return Article(title, author, g)
 	
 
 def stackoverflow2Article(soup):
@@ -68,7 +68,7 @@ def stackoverflow2Article(soup):
 		b.append(BeautifulSoup(str(section)))
 		section.replace_with(b)
 	
-	return Article(title, 'Stack Overflow', str(g)[:80000])
+	return Article(title, 'Stack Overflow', g)
 
 def getAuthor(msg):
 	result = ''
@@ -98,7 +98,7 @@ def bbc2Article(soup):
 		b = soup.new_tag("p")
 		b.append(BeautifulSoup(str(section)))
 		section.replace_with(b)
-	return Article(title, 'BBC', str(g)[:80000])
+	return Article(title, 'BBC', g)
 
 NYT_ADS = '《纽约时报》推出每日中文简报'
 def nyt2Article(soup):
@@ -124,7 +124,19 @@ def nyt2Article(soup):
 			if subitem.text and "英文版" in subitem.text:
 				item.replace_with(subitem)
 				break
-	return Article(title, author + ' - NYT', str(g)[:80000])
+	return Article(title, author + ' - NYT', g)
+
+def telegraph2Article(soup):
+	title = soup.find("meta", {"name": "twitter:title"})['content'].strip()
+	author = soup.find("meta", {"property": "article:author"})['content'].strip()
+	g = soup.find("article")
+	item = g.find('h1')
+	if item:
+		item.decompose()
+	item = g.find('address')
+	if item:
+		item.decompose()
+	return Article(title, author, g)
 
 def getArticle(URL):
 	r = requests.get(URL)
@@ -137,13 +149,15 @@ def getArticle(URL):
 		return bbc2Article(soup)
 	if "nytimes.com" in URL:
 		return nyt2Article(soup)
-	return bbc2Article(soup)
+	if "telegra.ph" in URL:
+		return telegraph2Article(soup)
+	return telegraph2Article(soup)
 
 def getTelegraph(msg, URL):
 	usr_id = msg.from_user.id
 	p = getPoster(msg, usr_id)
 	article = getArticle(URL)
-	r = p.post(title = article.title, author = article.author, author_url = URL, text = article.text)
+	r = p.post(title = article.title, author = article.author, author_url = URL, text = str(article.text)[:80000])
 	return r["url"]
 
 def trimURL(URL):
@@ -174,7 +188,7 @@ def command(update, context):
 			('token' in update.message.text.lower() or 'auth' in update.message.text.lower()):
 			id = update.message.from_user.id
 			return getPoster(update.message, id, forceMessageAuthUrl=True)
-		return update.message.reply_text('Feed me link, currently support wechat, bbc, stackoverflow, nyt')
+		return update.message.reply_text('Feed me link, currently support wechat, bbc, stackoverflow, NYT')
 	except Exception as e:
 		print(e)
 		tb.print_exc()
