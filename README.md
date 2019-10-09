@@ -28,6 +28,23 @@ The bot will automatically be running at the end of setup.
 
 If you want to use your own TELEGRAPH_TOKEN, feel free to replace the file.
 
+## bot description
+
+Send link to the bot, and bot will reply a telegraph link with extracted article. You can edit the telegraph link later.
+
+Feedback / feature requests are welcomed at @dushufenxiang_chat.
+
+Debug info is recorded in @bot_debug.
+
+Github: https://github.com/gaoyunzhi/telegraph_export_bot
+
+## bot commands
+
+token - Get your auth url to edit the generated telegraph.
+auth - Get your auth url to edit the generated telegraph.
+
+## bot about 
+
 ## notes
 
 You are also welcome to use my [@export_telegraph_bot](https://t.me/export_telegraph_bot) without create your own bot.

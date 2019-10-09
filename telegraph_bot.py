@@ -148,7 +148,8 @@ def export(update, context):
 
 def command(update, context):
 	try:
-		if update.message.text and 'token' in update.message.text.lower():
+		if update.message.text and \
+			('token' in update.message.text.lower() or 'auth' in update.message.text.lower()):
 			id = update.message.from_user.id
 			return getPoster(update.message, id, forceMessageAuthUrl=True)
 		return update.message.reply_text('Feed me link, currently support wechat, bbc, and stackoverflow')
