@@ -54,3 +54,4 @@ Currently, support:
 * Wechat
 * BBC
 * StackOverflow
+* NYT
