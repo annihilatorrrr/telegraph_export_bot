@@ -10,9 +10,7 @@ from html_telegraph_poster import TelegraphPoster
 
 DEBUG_GROUP = -1001198682178 # @bot_debug
 
-
-
-def Article(object):
+class Article(object):
 	def __init__(self, title, author, text):
 		self.title = title
 		self.author = author
@@ -55,7 +53,7 @@ def wechat2Article(URL):
 		b = soup.new_tag("p")
 		b.append(BeautifulSoup(str(section)))
 		section.replace_with(b)
-	return Article(title, author, text str(g)[:80000])
+	return Article(title, author,str(g)[:80000])
 	
 
 def stackoverflow2Article(URL):
@@ -71,7 +69,7 @@ def stackoverflow2Article(URL):
 		b.append(BeautifulSoup(str(section)))
 		section.replace_with(b)
 	
-	return Article(title, author, text str(g)[:80000])
+	return Article(title, author,str(g)[:80000])
 
 def getAuthor(msg):
 	result = ''
@@ -104,7 +102,7 @@ def bbc2Article(URL):
 		b = soup.new_tag("p")
 		b.append(BeautifulSoup(str(section)))
 		section.replace_with(b)
-	return Article(title, author, text str(g)[:80000])
+	return Article(title, author,str(g)[:80000])
 
 def getArticle(URL):
 	if "mp.weixin.qq.com" in URL:
