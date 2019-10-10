@@ -78,7 +78,7 @@ def getAuthor(msg):
 	if user.last_name:
 		result += ' ' + user.last_name
 	if user.username:
-		result += '(' + user.username + ')'
+		result += ' (' + user.username + ')'
 	return '[' + result + '](tg://user?id=' + str(user.id) + ')'
 
 def bbc2Article(soup):
@@ -178,7 +178,10 @@ def exportImp(update, context):
 				URL = "https://" + URL
 			u = trimURL(getTelegraph(msg, URL))
 			msg.reply_text(u)
-			r = context.bot.send_message(chat_id=DEBUG_GROUP, text=getAuthor(msg) + ': ' + u)
+			r = context.bot.send_message(
+				chat_id=DEBUG_GROUP, 
+				text=getAuthor(msg) + ': ' + u, 
+				parse_mode='Markdown')
 
 def export(update, context):
 	try:
