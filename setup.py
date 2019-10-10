@@ -2,7 +2,7 @@ import os
 import sys
 
 def setup(token):
-	RUN_COMMAND = 'nohup python3 telegraph_bot.py &'
+	RUN_COMMAND = 'nohup python3 export.py &'
 
 	TOKEN = ''
 	try:

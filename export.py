@@ -78,8 +78,8 @@ def getAuthor(msg):
 	if user.last_name:
 		result += ' ' + user.last_name
 	if user.username:
-		result += '(@' + user.username + ')'
-	return result
+		result += '(' + user.username + ')'
+	return '[' + result + '](tg://user?id=' + str(user.id) + ')'
 
 def bbc2Article(soup):
 	title = soup.find("h1").text.strip()
@@ -157,6 +157,9 @@ def getTelegraph(msg, URL):
 	usr_id = msg.from_user.id
 	p = getPoster(msg, usr_id)
 	article = getArticle(URL)
+	# for debug
+	with open('tmp.html', 'w') as f:
+		f.write(str(article.text))
 	r = p.post(title = article.title, author = article.author, author_url = URL, text = str(article.text)[:80000])
 	return r["url"]
 
