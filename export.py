@@ -101,6 +101,8 @@ def bbc2Article(soup):
 	return Article(title, 'BBC', g)
 
 NYT_ADS = '《纽约时报》推出每日中文简报'
+ADS_SUFFIX2 = '订阅《纽约时报》中文简报'
+
 def nyt2Article(soup):
 	title = soup.find("meta", {"property": "twitter:title"})['content'].strip()
 	author = soup.find("meta", {"name": "byl"})['content'].strip()
@@ -110,8 +112,10 @@ def nyt2Article(soup):
 			link.replace_with(link.text)
 	for item in g.find_all("div", class_="article-header"):
 		item.decompose()
+	for item in g.find_all("small"):
+		item.decompose()
 	for item in g.find_all("div", class_="article-paragraph"):
-		if item.text and NYT_ADS in item.text:
+		if item.text and (NYT_ADS in item.text or ADS_SUFFIX2 in item.text):
 			item.decompose()
 		elif item.text == '广告':
 			item.decompose()
