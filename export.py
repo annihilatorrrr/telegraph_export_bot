@@ -215,6 +215,7 @@ def test(url):
 	p = getPoster(None, next(iter(TELEGRAPH_TOKENS)))
 	article = getArticle(url)
 	r = p.post(title = article.title, author = article.author, author_url = url, text = str(article.text)[:80000])
+	print(r['url'])
 	return r['url']
 
 dp.add_handler(MessageHandler(Filters.text & Filters.private, export))
