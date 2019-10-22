@@ -65,7 +65,7 @@ def exportImp(update, context):
 			url = msg.text[item["offset"]:][:item["length"]]
 			if not '://' in url:
 				url = "https://" + url
-			u = trimUrl(getTelegraph(msg, url))
+			u = getTelegraph(msg, url)
 			msg.reply_text(u)
 			r = context.bot.send_message(
 				chat_id=DEBUG_GROUP, 
