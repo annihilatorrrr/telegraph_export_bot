@@ -13,7 +13,7 @@ def setup(mode = 'normal'):
 
 	if mode != 'restart' and mode != 'debug':
 		os.system('curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py')
-		os.system('python3 get-pip.py')
+		os.system('python3 get-pip.py --user')
 		os.system('rm get-pip.py')
 
 		os.system('pip3 install --upgrade pip --user')
