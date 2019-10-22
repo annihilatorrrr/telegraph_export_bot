@@ -17,9 +17,8 @@ def setup(mode = 'normal'):
 		os.system('rm get-pip.py')
 
 		os.system('pip3 install --upgrade pip --user')
-		os.system('pip3 install -r requirements.txt')
-		os.system('pip3 install python-telegram-bot --upgrade') # need to use some experiement feature, e.g. message filtering
-		os.system('pip3 install export_to_telegraph --upgrade')
+		os.system('pip3 install -r requirements.txt --user')
+		os.system('pip3 install python-telegram-bot --upgrade --user') # need to use some experiement feature, e.g. message filtering
 
 	# kill the old running bot if any. If you need two same bot running in one machine, use mannual command instead
 	os.system("ps aux | grep python | grep export.py | awk '{print $2}' | xargs kill -9")
