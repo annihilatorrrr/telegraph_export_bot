@@ -22,11 +22,11 @@ User can edit the telegraph page afterwards.
 
 First, you need to create a Telegram bot. Talk with the [BotFather](https://t.me/botfather) and ask it for a bot (and its respective token)
 
-Once you get the TOKEN, run `python setup.py YOUR_TOKEN`.
+Once you get the token, save the token in the TOKEN file. Then run `python setup.py`.
 
 The bot will automatically be running at the end of setup.
 
-If you want to use your own TELEGRAPH_TOKEN, feel free to replace the file.
+If you want to use your own telegraph token, feel free to replace the TELEGRAPH_TOKENS file.
 
 ## bot description
 
