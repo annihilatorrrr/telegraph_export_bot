@@ -90,10 +90,10 @@ def command(update, context):
 		print(e)
 		tb.print_exc()
 
-with open('TOKEN') as f:
-	TOKEN = f.readline().strip()
+with open('CREDENTIALS') as f:
+    CREDENTIALS = yaml.load(f, Loader=yaml.FullLoader)
 
-updater = Updater(TOKEN, use_context=True)
+updater = Updater(CREDENTIALS['bot_token'], use_context=True)
 dp = updater.dispatcher
 
 dp.add_handler(MessageHandler(Filters.text & Filters.private, export))
