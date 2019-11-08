@@ -7,6 +7,7 @@ import requests
 import json
 import export_to_telegraph
 from html_telegraph_poster import TelegraphPoster
+import yaml
 
 DEBUG_GROUP = -1001198682178 # @bot_debug
 
