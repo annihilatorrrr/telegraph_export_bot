@@ -2,3 +2,4 @@ python-telegram-bot
 export_to_telegraph>=0.0.6
 html_telegraph_poster
 pyyaml
+telegram_util>=0.0.8

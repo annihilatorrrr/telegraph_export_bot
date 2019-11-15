@@ -8,14 +8,15 @@ import json
 import export_to_telegraph
 from html_telegraph_poster import TelegraphPoster
 import yaml
+from telegram_util import getDisplayUser
 
-DEBUG_GROUP = -1001198682178 # @bot_debug
+with open('CREDENTIALS') as f:
+    CREDENTIALS = yaml.load(f, Loader=yaml.FullLoader)
+tele = Updater(CREDENTIALS['bot_token'], use_context=True)
 
-class Article(object):
-	def __init__(self, title, author, text):
-		self.title = title
-		self.author = author
-		self.text = text
+r = tele.bot.send_message(-1001198682178, 'test')
+r.delete()
+debug_group = r.chat
 
 try:
 	with open('TELEGRAPH_TOKENS') as f:
@@ -41,17 +42,6 @@ def msgAuthUrl(msg, p):
 	r = p.get_account_info(fields=['auth_url'])
 	msg.reply_text('Use this url to login in 5 minutes: ' + r['auth_url'])
 
-def getAuthor(msg):
-	result = ''
-	user = msg.from_user
-	if user.first_name:
-		result += ' ' + user.first_name
-	if user.last_name:
-		result += ' ' + user.last_name
-	if user.username:
-		result += ' (' + user.username + ')'
-	return '[' + result + '](tg://user?id=' + str(user.id) + ')'
-
 def getTelegraph(msg, url):
 	usr_id = msg.from_user.id
 	if str(usr_id) not in TELEGRAPH_TOKENS:
@@ -68,10 +58,10 @@ def exportImp(update, context):
 				url = "https://" + url
 			u = getTelegraph(msg, url)
 			msg.reply_text(u)
-			r = context.bot.send_message(
-				chat_id=DEBUG_GROUP, 
-				text=getAuthor(msg) + ': ' + u, 
-				parse_mode='Markdown')
+			r = debug_group.send_message( 
+				text=getDisplayUser(msg.from_user) + ': ' + u, 
+				parse_mode='Markdown',
+				disable_notification=True)
 
 def export(update, context):
 	try:
@@ -91,14 +81,8 @@ def command(update, context):
 		print(e)
 		tb.print_exc()
 
-with open('CREDENTIALS') as f:
-    CREDENTIALS = yaml.load(f, Loader=yaml.FullLoader)
+tele.dispatcher.add_handler(MessageHandler(Filters.text & Filters.private, export))
+tele.dispatcher.add_handler(MessageHandler(Filters.private & Filters.command, command))
 
-updater = Updater(CREDENTIALS['bot_token'], use_context=True)
-dp = updater.dispatcher
-
-dp.add_handler(MessageHandler(Filters.text & Filters.private, export))
-dp.add_handler(MessageHandler(Filters.private & Filters.command, command))
-
-updater.start_polling()
-updater.idle()
+tele.start_polling()
+tele.idle()
