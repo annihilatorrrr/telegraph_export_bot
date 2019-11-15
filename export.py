@@ -20,23 +20,21 @@ debug_group = r.chat
 
 known_users = [420074357]
 
-try:
-	with open('TELEGRAPH_TOKENS') as f:
-		TELEGRAPH_TOKENS = json.load(f)
-except:
-	TELEGRAPH_TOKENS = {}
+with open('TELEGRAPH_TOKENS') as f:
+	TELEGRAPH_TOKENS = yaml.load(f, Loader=yaml.FullLoader)
 
 def saveTelegraphTokens():
 	with open('TELEGRAPH_TOKENS', 'w') as f:
-		f.write(json.dumps(TELEGRAPH_TOKENS, sort_keys=True, indent=2))
+		f.write(yaml.dump(TELEGRAPH_TOKENS, sort_keys=True, indent=2))
 
-def msgTelegraphToken(msg, id):
-	if str(id) in TELEGRAPH_TOKENS:
-		p = TelegraphPoster(access_token = TELEGRAPH_TOKENS[str(id)])
+def msgTelegraphToken(msg):
+	user_id = msg.from_user.id
+	if user_id in TELEGRAPH_TOKENS:
+		p = TelegraphPoster(access_token = TELEGRAPH_TOKENS[user_id])
 	else:
 		p = TelegraphPoster()
 		r = p.create_api_token(msg.from_user.first_name, msg.from_user.username)
-		TELEGRAPH_TOKENS[str(id)] = r['access_token']
+		TELEGRAPH_TOKENS[user_id] = r['access_token']
 		saveTelegraphTokens()
 	msgAuthUrl(msg, p)
 
@@ -46,10 +44,10 @@ def msgAuthUrl(msg, p):
 
 def getTelegraph(msg, url):
 	usr_id = msg.from_user.id
-	if str(usr_id) not in TELEGRAPH_TOKENS:
-		msgTelegraphToken(msg, usr_id)
-	export_to_telegraph.token = TELEGRAPH_TOKENS[str(usr_id)]
-	return export_to_telegraph.export(url)
+	if user_id not in TELEGRAPH_TOKENS:
+		msgTelegraphToken(msg)
+	export_to_telegraph.token = TELEGRAPH_TOKENS[user_id]
+	return export_to_telegraph.export(url, True) # DEBUG, remove second param when go prod
 
 @log_on_fail(debug_group)
 def export(update, context):
@@ -69,8 +67,7 @@ def export(update, context):
 @log_on_fail(debug_group)
 def command(update, context):
 	if matchKey(update.message.text, ['auth', 'token']):
-		id = update.message.from_user.id
-		return msgTelegraphToken(update.message, id)
+		return msgTelegraphToken(update.message)
 	return update.message.reply_text('Feed me link, currently support wechat, bbc, stackoverflow, NYT, and maybe more')
 
 tele.dispatcher.add_handler(MessageHandler(Filters.text & Filters.private, export))

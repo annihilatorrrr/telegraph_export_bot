@@ -18,6 +18,14 @@ def setup(arg = ''):
 	except:
 		os.system('sudo pip3 install python-telegram-bot --upgrade') # need to use some experiement feature, e.g. message filtering
 
+	try:
+		import yaml
+		with open('TELEGRAPH_TOKENS') as f:
+			TELEGRAPH_TOKENS = yaml.load(f, Loader=yaml.FullLoader)
+	except:
+		with open('TELEGRAPH_TOKENS', 'w') as f:
+			f.write(yaml.dump({}, sort_keys=True, indent=2))
+
 	# kill the old running bot if any. If you need two same bot running in one machine, use mannual command instead
 	os.system("ps aux | grep ython | grep %s | awk '{print $2}' | xargs kill -9" % EXE_FILE)
 
