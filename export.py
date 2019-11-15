@@ -3,8 +3,6 @@
 
 from telegram.ext import Updater, MessageHandler, Filters
 
-import requests
-import json
 import export_to_telegraph
 from html_telegraph_poster import TelegraphPoster
 import yaml
@@ -43,7 +41,7 @@ def msgAuthUrl(msg, p):
 	msg.reply_text('Use this url to login in 5 minutes: ' + r['auth_url'])
 
 def getTelegraph(msg, url):
-	usr_id = msg.from_user.id
+	user_id = msg.from_user.id
 	if user_id not in TELEGRAPH_TOKENS:
 		msgTelegraphToken(msg)
 	export_to_telegraph.token = TELEGRAPH_TOKENS[user_id]
@@ -59,7 +57,7 @@ def export(update, context):
 				url = "https://" + url
 			u = getTelegraph(msg, url)
 			msg.reply_text(u)
-			if msg.from_user not in known_users:
+			if msg.from_user.id not in known_users:
 				r = debug_group.send_message( 
 					text=getDisplayUser(msg.from_user) + ': ' + u, 
 					parse_mode='Markdown')

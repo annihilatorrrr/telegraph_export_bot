@@ -4,7 +4,7 @@ import sys
 EXE_FILE = 'export'
 
 def setup(arg = ''):
-	RUN_COMMAND = "nohup python3 %s.py &" % EXE_FILE
+	RUN_COMMAND = "nohup python3 -u %s.py &" % EXE_FILE
 
 	if arg != 'debug':
 		r = os.system('sudo pip3 install -r requirements.txt')
