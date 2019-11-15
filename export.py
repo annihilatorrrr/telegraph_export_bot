@@ -8,7 +8,7 @@ import json
 import export_to_telegraph
 from html_telegraph_poster import TelegraphPoster
 import yaml
-from telegram_util import getDisplayUser
+from telegram_util import getDisplayUser, matchKey, log_on_fail
 
 with open('CREDENTIALS') as f:
     CREDENTIALS = yaml.load(f, Loader=yaml.FullLoader)
@@ -17,6 +17,8 @@ tele = Updater(CREDENTIALS['bot_token'], use_context=True)
 r = tele.bot.send_message(-1001198682178, 'test')
 r.delete()
 debug_group = r.chat
+
+known_users = [420074357]
 
 try:
 	with open('TELEGRAPH_TOKENS') as f:
@@ -49,7 +51,8 @@ def getTelegraph(msg, url):
 	export_to_telegraph.token = TELEGRAPH_TOKENS[str(usr_id)]
 	return export_to_telegraph.export(url)
 
-def exportImp(update, context):
+@log_on_fail(debug_group)
+def export(update, context):
 	msg = update.message
 	for item in msg.entities:
 		if (item["type"] == "url"):
@@ -58,28 +61,17 @@ def exportImp(update, context):
 				url = "https://" + url
 			u = getTelegraph(msg, url)
 			msg.reply_text(u)
-			r = debug_group.send_message( 
-				text=getDisplayUser(msg.from_user) + ': ' + u, 
-				parse_mode='Markdown',
-				disable_notification=True)
+			if msg.from_user not in known_users:
+				r = debug_group.send_message( 
+					text=getDisplayUser(msg.from_user) + ': ' + u, 
+					parse_mode='Markdown')
 
-def export(update, context):
-	try:
-		exportImp(update, context)
-	except Exception as e:
-		print(e)
-		tb.print_exc()
-
+@log_on_fail(debug_group)
 def command(update, context):
-	try:
-		if update.message.text and \
-			('token' in update.message.text.lower() or 'auth' in update.message.text.lower()):
-			id = update.message.from_user.id
-			return msgTelegraphToken(update.message, id)
-		return update.message.reply_text('Feed me link, currently support wechat, bbc, stackoverflow, NYT')
-	except Exception as e:
-		print(e)
-		tb.print_exc()
+	if matchKey(update.message.text, ['auth', 'token']):
+		id = update.message.from_user.id
+		return msgTelegraphToken(update.message, id)
+	return update.message.reply_text('Feed me link, currently support wechat, bbc, stackoverflow, NYT, and maybe more')
 
 tele.dispatcher.add_handler(MessageHandler(Filters.text & Filters.private, export))
 tele.dispatcher.add_handler(MessageHandler(Filters.private & Filters.command, command))
