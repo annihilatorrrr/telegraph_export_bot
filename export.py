@@ -45,7 +45,7 @@ def getTelegraph(msg, url):
 	if user_id not in TELEGRAPH_TOKENS:
 		msgTelegraphToken(msg)
 	export_to_telegraph.token = TELEGRAPH_TOKENS[user_id]
-	return export_to_telegraph.export(url, True) # DEBUG, remove second param when go prod
+	return export_to_telegraph.export(url, True, force = True) # DEBUG, remove second param when go prod
 
 @log_on_fail(debug_group)
 def export(update, context):
