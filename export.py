@@ -19,6 +19,7 @@ debug_group = r.chat
 known_users = [420074357]
 
 with open('TELEGRAPH_TOKENS') as f:
+	TELEGRAPH_TOKENS = {}
 	for k, v in yaml.load(f, Loader=yaml.FullLoader).items():
 		TELEGRAPH_TOKENS[int(k)] = v
 
