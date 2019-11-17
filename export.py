@@ -12,7 +12,7 @@ with open('CREDENTIALS') as f:
     CREDENTIALS = yaml.load(f, Loader=yaml.FullLoader)
 tele = Updater(CREDENTIALS['bot_token'], use_context=True)
 
-r = tele.bot.send_message(-1001198682178, 'test')
+r = tele.bot.send_message(-1001198682178, 'start')
 r.delete()
 debug_group = r.chat
 
