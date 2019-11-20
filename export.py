@@ -16,7 +16,7 @@ r = tele.bot.send_message(-1001198682178, 'start')
 r.delete()
 debug_group = r.chat
 
-known_users = [420074357]
+known_users = [420074357, 652783030]
 
 with open('TELEGRAPH_TOKENS') as f:
 	TELEGRAPH_TOKENS = {}
