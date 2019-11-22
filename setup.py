@@ -3,7 +3,14 @@ import sys
 
 EXE_FILE = 'export'
 
+def kill():
+	os.system("ps aux | grep ython | grep %s | awk '{print $2}' | xargs kill -9" % EXE_FILE)
+
 def setup(arg = ''):
+	if arg == 'kill':
+		kill()
+		return
+		
 	RUN_COMMAND = "nohup python3 -u %s.py &" % EXE_FILE
 
 	if arg != 'debug':
@@ -26,8 +33,7 @@ def setup(arg = ''):
 		with open('TELEGRAPH_TOKENS', 'w') as f:
 			f.write(yaml.dump({}, sort_keys=True, indent=2))
 
-	# kill the old running bot if any. If you need two same bot running in one machine, use mannual command instead
-	os.system("ps aux | grep ython | grep %s | awk '{print $2}' | xargs kill -9" % EXE_FILE)
+	kill()
 
 	if arg.startswith('debug'):
 		os.system(RUN_COMMAND[6:-2])
