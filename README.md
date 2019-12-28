@@ -12,8 +12,6 @@ Send link to the bot, and bot will reply a telegraph link with extracted article
 
 Feedback / feature requests are welcomed at [@dushufenxiang_chat](https://t.me/dushufenxiang_chat).
 
-Debug info is recorded in [@bot_debug](https://t.me/bot_debug).
-
 ## feature
 
 User can edit the telegraph page afterwards.
@@ -33,8 +31,6 @@ If you want to use your own telegraph token, feel free to replace the TELEGRAPH_
 Send link to the bot, and bot will reply a telegraph link with extracted article. You can edit the telegraph link later.
 
 Feedback / feature requests are welcomed at @dushufenxiang_chat.
-
-Debug info is recorded in @bot_debug.
 
 Github: https://github.com/gaoyunzhi/telegraph_export_bot
 
