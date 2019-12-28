@@ -34,6 +34,8 @@ Feedback / feature requests are welcomed at @dushufenxiang_chat.
 
 Github: https://github.com/gaoyunzhi/telegraph_export_bot
 
+More projects: https://t.me/useless_project_ideas
+
 ## bot commands
 
 token - Get your auth url to edit the generated telegraph.
