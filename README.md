@@ -48,10 +48,3 @@ auth - Get your auth url to edit the generated telegraph.
 ## notes
 
 You are also welcome to use my [@export_telegraph_bot](https://t.me/export_telegraph_bot) without create your own bot.
-
-Currently, support:
-
-* Wechat
-* BBC
-* StackOverflow
-* NYT
