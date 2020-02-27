@@ -68,7 +68,7 @@ def exportGroup(update, context):
 			links.append('[%s](%s)' % (u, u))
 	if not links:
 		return
-	new_text = '\n'.join(links) + '\n' + new_text
+	new_text = '|'.join(links) + '|' + new_text
 	msg.chat.send_message(new_text, parse_mode='Markdown')
 	msg.delete()
 
