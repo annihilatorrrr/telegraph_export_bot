@@ -61,7 +61,7 @@ def exportGroup(update, context):
 			if not '://' in url:
 				url = "https://" + url
 			u = getTelegraph(msg, url)
-			links.append('[]()' % (u, u))
+			links.append('[%s](%s)' % (u, u))
 	if not links:
 		return
 	new_text = '\n'.join(links) + '\n' + new_text
