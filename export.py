@@ -50,6 +50,25 @@ def getTelegraph(msg, url):
 	return export_to_telegraph.export(url, True, force = True)
 
 @log_on_fail(debug_group)
+def exportGroup(update, context):
+	msg = update.message
+	new_text = msg.text_markdown
+	links = []
+	for item in msg.entities:
+		if (item["type"] == "url"):
+			url = msg.text[item["offset"]:][:item["length"]]
+			new_text.replace('(%s)' % url, '(link)')
+			if not '://' in url:
+				url = "https://" + url
+			u = getTelegraph(msg, url)
+			links.append('[]()' % (u, u))
+	if not links:
+		return
+	new_text = '\n'.join(links) + '\n' + new_text
+	msg.chat.send_message(new_text, parse_mode='Markdown')
+	msg.delete()
+
+@log_on_fail(debug_group)
 def export(update, context):
 	msg = update.message
 	for item in msg.entities:
@@ -70,6 +89,7 @@ def command(update, context):
 		return msgTelegraphToken(update.message)
 	return update.message.reply_text('Feed me link, currently support wechat, bbc, stackoverflow, NYT, and maybe more')
 
+tele.dispatcher.add_handler(MessageHandler(Filters.text & Filters.group, exportGroup))
 tele.dispatcher.add_handler(MessageHandler(Filters.text & Filters.private, export))
 tele.dispatcher.add_handler(MessageHandler(Filters.private & Filters.command, command))
 
