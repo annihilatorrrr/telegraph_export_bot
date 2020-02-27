@@ -52,12 +52,16 @@ def getTelegraph(msg, url):
 @log_on_fail(debug_group)
 def exportGroup(update, context):
 	msg = update.message
-	new_text = msg.text_markdown
+	new_text = msg.text
 	links = []
 	for item in msg.entities:
 		if (item["type"] == "url"):
 			url = msg.text[item["offset"]:][:item["length"]]
-			new_text.replace('(%s)' % url, '(link)')
+			markdown_url = '(%s)' % url
+			if markdown_url in new_text:
+				new_text = new_text.replace('(%s)' % url, '(link)')
+			else:
+				new_text = new_text.replace(url, '[link](%s)' % url)
 			if not '://' in url:
 				url = "https://" + url
 			u = getTelegraph(msg, url)
