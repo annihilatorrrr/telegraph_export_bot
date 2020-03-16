@@ -17,6 +17,7 @@ r.delete()
 debug_group = r.chat
 
 known_users = [420074357, 652783030, -1001399998441]
+no_auth_link_users = [-1001399998441]
 
 with open('TELEGRAPH_TOKENS') as f:
 	TELEGRAPH_TOKENS = {}
@@ -29,29 +30,30 @@ def saveTelegraphTokens():
 
 def getSource(msg):
 	if msg.from_user:
-		return msg.from_user.id, getDisplayUser(msg.from_user) 
-	return msg.chat_id, getDisplayChat(msg.chat)
-
-def msgTelegraphToken(msg):
-	source_id, _ = getSource(msg)
-	if user_id in TELEGRAPH_TOKENS:
-		p = TelegraphPoster(access_token = TELEGRAPH_TOKENS[user_id])
-	else:
-		p = TelegraphPoster()
-		r = p.create_api_token(msg.from_user.first_name, msg.from_user.username)
-		TELEGRAPH_TOKENS[user_id] = r['access_token']
-		saveTelegraphTokens()
-	msgAuthUrl(msg, p)
+		return msg.from_user.id, getDisplayUser(msg.from_user), msg.from_user.first_name, msg.from_user.username
+	return msg.chat_id, getDisplayChat(msg.chat), msg.chat.title, msg.chat.username
 
 def msgAuthUrl(msg, p):
 	r = p.get_account_info(fields=['auth_url'])
 	msg.reply_text('Use this url to login in 5 minutes: ' + r['auth_url'])
 
+def msgTelegraphToken(msg):
+	source_id, _, shortname, longname = getSource(msg)
+	if source_id in TELEGRAPH_TOKENS:
+		p = TelegraphPoster(access_token = TELEGRAPH_TOKENS[source_id])
+	else:
+		p = TelegraphPoster()
+		r = p.create_api_token(shortname, longname)
+		TELEGRAPH_TOKENS[source_id] = r['access_token']
+		saveTelegraphTokens()
+	if source_id not in no_auth_link_users:
+		msgAuthUrl(msg, p)
+
 def getTelegraph(msg, url):
-	source_id, _ = getSource(msg)
+	source_id, _, _, _ = getSource(msg)
 	if source_id not in TELEGRAPH_TOKENS:
 		msgTelegraphToken(msg)
-	export_to_telegraph.token = TELEGRAPH_TOKENS[user_id]
+	export_to_telegraph.token = TELEGRAPH_TOKENS[source_id]
 	return export_to_telegraph.export(url, True, force = True)
 
 def exportImp(msg):
@@ -80,7 +82,7 @@ def exportImp(msg):
 def export(update, context):
 	msg = update.effective_message
 	r = exportImp(msg)
-	source_id, display_source = getSource(msg)
+	source_id, display_source, _, _ = getSource(msg)
 	if source_id not in known_users:
 		debug_group.send_message(text=display_source + ': ' + r, parse_mode='Markdown')
 
@@ -88,10 +90,9 @@ def export(update, context):
 def command(update, context):
 	if matchKey(update.message.text, ['auth', 'token']):
 		return msgTelegraphToken(update.message)
-	return update.message.reply_text('Feed me link, currently support wechat, bbc, stackoverflow, NYT, and maybe more')
 
 tele.dispatcher.add_handler(MessageHandler(Filters.text & Filters.entity('url'), export))
-tele.dispatcher.add_handler(MessageHandler(Filters.private & Filters.command, command))
+tele.dispatcher.add_handler(MessageHandler(Filters.command, command))
 
 tele.start_polling()
 tele.idle()
