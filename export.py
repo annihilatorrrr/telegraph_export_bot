@@ -87,7 +87,10 @@ def export(update, context):
 	if source_id not in known_users:
 		debug_group.send_message(text=display_source + ': ' + r, parse_mode='Markdown')
 	if source_id in delete_original_msg:
-		msg.delete()
+		try:
+			msg.delete()
+		except:
+			pass
 
 @log_on_fail(debug_group)
 def command(update, context):
