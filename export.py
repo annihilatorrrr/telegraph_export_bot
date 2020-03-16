@@ -18,6 +18,7 @@ debug_group = r.chat
 
 known_users = [420074357, 652783030, -1001399998441]
 no_auth_link_users = [-1001399998441]
+delete_original_msg = [-1001399998441]
 
 with open('TELEGRAPH_TOKENS') as f:
 	TELEGRAPH_TOKENS = {}
@@ -85,6 +86,8 @@ def export(update, context):
 	source_id, display_source, _, _ = getSource(msg)
 	if source_id not in known_users:
 		debug_group.send_message(text=display_source + ': ' + r, parse_mode='Markdown')
+	if source_id in delete_original_msg:
+		msg.delete()
 
 @log_on_fail(debug_group)
 def command(update, context):
