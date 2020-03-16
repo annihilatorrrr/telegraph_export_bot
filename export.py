@@ -6,7 +6,7 @@ from telegram.ext import Updater, MessageHandler, Filters
 import export_to_telegraph
 from html_telegraph_poster import TelegraphPoster
 import yaml
-from telegram_util import getDisplayUser, matchKey, log_on_fail
+from telegram_util import getDisplayUser, matchKey, log_on_fail, getDisplayChat
 
 with open('CREDENTIALS') as f:
     CREDENTIALS = yaml.load(f, Loader=yaml.FullLoader)
@@ -16,7 +16,7 @@ r = tele.bot.send_message(-1001198682178, 'start')
 r.delete()
 debug_group = r.chat
 
-known_users = [420074357, 652783030]
+known_users = [420074357, 652783030, -1001399998441]
 
 with open('TELEGRAPH_TOKENS') as f:
 	TELEGRAPH_TOKENS = {}
@@ -27,8 +27,13 @@ def saveTelegraphTokens():
 	with open('TELEGRAPH_TOKENS', 'w') as f:
 		f.write(yaml.dump(TELEGRAPH_TOKENS, sort_keys=True, indent=2))
 
+def getSource(msg):
+	if msg.from_user:
+		return msg.from_user.id, getDisplayUser(msg.from_user) 
+	return msg.chat_id, getDisplayChat(msg.chat)
+
 def msgTelegraphToken(msg):
-	user_id = msg.from_user.id
+	source_id, _ = getSource(msg)
 	if user_id in TELEGRAPH_TOKENS:
 		p = TelegraphPoster(access_token = TELEGRAPH_TOKENS[user_id])
 	else:
@@ -43,15 +48,13 @@ def msgAuthUrl(msg, p):
 	msg.reply_text('Use this url to login in 5 minutes: ' + r['auth_url'])
 
 def getTelegraph(msg, url):
-	user_id = msg.from_user.id
-	if user_id not in TELEGRAPH_TOKENS:
+	source_id, _ = getSource(msg)
+	if source_id not in TELEGRAPH_TOKENS:
 		msgTelegraphToken(msg)
 	export_to_telegraph.token = TELEGRAPH_TOKENS[user_id]
 	return export_to_telegraph.export(url, True, force = True)
 
-@log_on_fail(debug_group)
-def exportGroup(update, context):
-	msg = update.message
+def exportImp(msg):
 	new_text = msg.text
 	links = []
 	for item in msg.entities:
@@ -69,23 +72,17 @@ def exportGroup(update, context):
 	if not links:
 		return
 	new_text = '|'.join(links) + '|' + new_text
+	new_text = new_text.replace('_', '\_')
 	msg.chat.send_message(new_text, parse_mode='Markdown')
-	msg.delete()
+	return new_text
 
 @log_on_fail(debug_group)
 def export(update, context):
-	msg = update.message
-	for item in msg.entities:
-		if (item["type"] == "url"):
-			url = msg.text[item["offset"]:][:item["length"]]
-			if not '://' in url:
-				url = "https://" + url
-			u = getTelegraph(msg, url)
-			msg.reply_text(u)
-			if msg.from_user.id not in known_users:
-				r = debug_group.send_message( 
-					text=getDisplayUser(msg.from_user) + ': ' + u, 
-					parse_mode='Markdown')
+	msg = update.effective_message
+	r = exportImp(msg)
+	source_id, display_source = getSource(msg)
+	if source_id not in known_users:
+		debug_group.send_message(text=display_source + ': ' + r, parse_mode='Markdown')
 
 @log_on_fail(debug_group)
 def command(update, context):
@@ -93,8 +90,7 @@ def command(update, context):
 		return msgTelegraphToken(update.message)
 	return update.message.reply_text('Feed me link, currently support wechat, bbc, stackoverflow, NYT, and maybe more')
 
-tele.dispatcher.add_handler(MessageHandler(Filters.text & Filters.group, exportGroup))
-tele.dispatcher.add_handler(MessageHandler(Filters.text & Filters.private, export))
+tele.dispatcher.add_handler(MessageHandler(Filters.text & Filters.entity('url'), export))
 tele.dispatcher.add_handler(MessageHandler(Filters.private & Filters.command, command))
 
 tele.start_polling()
