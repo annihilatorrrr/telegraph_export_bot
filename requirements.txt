@@ -1,5 +1,5 @@
 python-telegram-bot
-export_to_telegraph>=0.0.56
+export_to_telegraph
 html_telegraph_poster
 pyyaml
-telegram_util>=0.0.36
+telegram_util

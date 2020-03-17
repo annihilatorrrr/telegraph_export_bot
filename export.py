@@ -6,7 +6,7 @@ from telegram.ext import Updater, MessageHandler, Filters
 import export_to_telegraph
 from html_telegraph_poster import TelegraphPoster
 import yaml
-from telegram_util import getDisplayUser, matchKey, log_on_fail, getDisplayChat
+from telegram_util import getDisplayUser, matchKey, log_on_fail, getDisplayChat, escapeMarkdown
 
 with open('CREDENTIALS') as f:
     CREDENTIALS = yaml.load(f, Loader=yaml.FullLoader)
@@ -75,11 +75,10 @@ def exportImp(msg):
 			links.append('[%s](%s)' % (u, u))
 	if not links:
 		return
-	new_text = '|'.join(links) + '|' + new_text
+	new_text = escapeMarkdown('|'.join(links) + '|' + new_text)
 	msg.chat.send_message(new_text, parse_mode='Markdown')
 	return new_text
 
-@log_on_fail(debug_group)
 def export(update, context):
 	msg = update.effective_message
 	r = exportImp(msg)
