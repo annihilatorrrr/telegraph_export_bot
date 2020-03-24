@@ -55,7 +55,7 @@ def getTelegraph(msg, url):
 	if source_id not in TELEGRAPH_TOKENS:
 		msgTelegraphToken(msg)
 	export_to_telegraph.token = TELEGRAPH_TOKENS[source_id]
-	return export_to_telegraph.export(url, True, force = True, 
+	return export_to_telegraph.export(url, throw_exception = True, force = True, 
 		toSimplified = 'bot_simplify' in msg.text)
 
 def exportImp(msg):
@@ -75,6 +75,8 @@ def exportImp(msg):
 			links.append('[%s](%s)' % (u, u))
 	if not links:
 		return
+	if len(links) == 1:
+		new_text.replace('[link](', '[source](')
 	new_text = escapeMarkdown('|'.join(links) + '|' + new_text)
 	msg.chat.send_message(new_text, parse_mode='Markdown')
 	return new_text

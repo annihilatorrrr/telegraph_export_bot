@@ -21,11 +21,6 @@ def setup(arg = ''):
 			os.system('rm get-pip.py')
 			os.system('pip3 install --user -r requirements.txt')
 	try:
-		from telegram.ext import Updater, MessageHandler, Filters
-	except:
-		os.system('pip3 install --user python-telegram-bot --upgrade') # need to use some experiement feature, e.g. message filtering
-
-	try:
 		import yaml
 		with open('TELEGRAPH_TOKENS') as f:
 			TELEGRAPH_TOKENS = yaml.load(f, Loader=yaml.FullLoader)
