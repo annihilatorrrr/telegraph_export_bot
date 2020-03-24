@@ -75,8 +75,11 @@ def exportImp(msg):
 			links.append('[%s](%s)' % (u, u))
 	if not links:
 		return
+	print(links)
 	if len(links) == 1:
+		print(1, new_text)
 		new_text.replace('[link](', '[source](')
+		print(2, new_text)
 	new_text = escapeMarkdown('|'.join(links) + '|' + new_text)
 	msg.chat.send_message(new_text, parse_mode='Markdown')
 	return new_text
