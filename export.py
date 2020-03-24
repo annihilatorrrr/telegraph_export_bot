@@ -6,7 +6,7 @@ from telegram.ext import Updater, MessageHandler, Filters
 import export_to_telegraph
 from html_telegraph_poster import TelegraphPoster
 import yaml
-from telegram_util import getDisplayUser, matchKey, log_on_fail, getDisplayChat, escapeMarkdown
+from telegram_util import getDisplayUser, matchKey, log_on_fail, getDisplayChat, escapeMarkdown, clearUrl
 
 with open('CREDENTIALS') as f:
     CREDENTIALS = yaml.load(f, Loader=yaml.FullLoader)
@@ -68,18 +68,15 @@ def exportImp(msg):
 			if markdown_url in new_text:
 				new_text = new_text.replace('(%s)' % url, '(link)')
 			else:
-				new_text = new_text.replace(url, '[link](%s)' % url)
+				new_text = new_text.replace(url, '[link](%s)' % clearUrl(url))
 			if not '://' in url:
 				url = "https://" + url
 			u = getTelegraph(msg, url)
 			links.append('[%s](%s)' % (u, u))
 	if not links:
 		return
-	print(links)
 	if len(links) == 1:
-		print(1, new_text)
-		new_text.replace('[link](', '[source](')
-		print(2, new_text)
+		new_text = new_text.replace('[link](', '[source](')
 	new_text = escapeMarkdown('|'.join(links) + '|' + new_text)
 	msg.chat.send_message(new_text, parse_mode='Markdown')
 	return new_text
