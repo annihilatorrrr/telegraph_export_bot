@@ -62,6 +62,7 @@ def exportImp(msg):
 	new_text = msg.text
 	links = []
 	for item in msg.entities:
+		print(item)
 		if (item["type"] == "url"):
 			url = msg.text[item["offset"]:][:item["length"]]
 			markdown_url = '(%s)' % url
