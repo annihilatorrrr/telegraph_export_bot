@@ -29,10 +29,12 @@ def setup(arg = ''):
 			f.write(yaml.dump({}, sort_keys=True, indent=2))
 
 	kill()
+	print(1)
 
 	if arg.startswith('debug'):
 		os.system(RUN_COMMAND[6:-2])
 	else:
+		print(2)
 		os.system(RUN_COMMAND)
 
 
