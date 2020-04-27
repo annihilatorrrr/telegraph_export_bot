@@ -31,15 +31,15 @@ def saveTelegraphTokens():
 
 def getSource(msg):
 	if msg.from_user:
-		return msg.from_user.id, getDisplayUser(msg.from_user), msg.from_user.first_name, msg.from_user.username
-	return msg.chat_id, getDisplayChat(msg.chat), msg.chat.title, msg.chat.username
+		return msg.from_user.id, msg.from_user.first_name, msg.from_user.username
+	return msg.chat_id, msg.chat.title, msg.chat.username
 
 def msgAuthUrl(msg, p):
 	r = p.get_account_info(fields=['auth_url'])
 	msg.reply_text('Use this url to login in 5 minutes: ' + r['auth_url'])
 
 def msgTelegraphToken(msg):
-	source_id, _, shortname, longname = getSource(msg)
+	source_id, shortname, longname = getSource(msg)
 	if source_id in TELEGRAPH_TOKENS:
 		p = TelegraphPoster(access_token = TELEGRAPH_TOKENS[source_id])
 	else:
@@ -51,7 +51,7 @@ def msgTelegraphToken(msg):
 		msgAuthUrl(msg, p)
 
 def getTelegraph(msg, url):
-	source_id, _, _, _ = getSource(msg)
+	source_id, _, _ = getSource(msg)
 	if source_id not in TELEGRAPH_TOKENS:
 		msgTelegraphToken(msg)
 	export_to_telegraph.token = TELEGRAPH_TOKENS[source_id]
@@ -85,9 +85,7 @@ def exportImp(msg):
 def export(update, context):
 	msg = update.effective_message
 	r = exportImp(msg)
-	source_id, display_source, _, _ = getSource(msg)
-	if source_id not in known_users:
-		debug_group.send_message(text=display_source + ': ' + r, parse_mode='Markdown')
+	source_id, _, _ = getSource(msg)
 	if source_id in delete_original_msg:
 		try:
 			msg.delete()
