@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from telegram.ext import Updater, MessageHandler, Filters
+from telegram import MessageEntity
 
 import export_to_telegraph
 from html_telegraph_poster import TelegraphPoster
@@ -82,9 +83,13 @@ def exportImp(msg):
 	msg.chat.send_message(new_text, parse_mode='Markdown')
 	return new_text
 
+@log_on_fail(debug_group)
 def export(update, context):
 	msg = update.effective_message
-	r = exportImp(msg)
+	print(msg.text)
+	r = msg.reply_text('recieved')
+	exportImp(msg)
+	r.delete()
 	source_id, _, _ = getSource(msg)
 	if source_id in delete_original_msg:
 		try:
@@ -97,7 +102,8 @@ def command(update, context):
 	if matchKey(update.message.text, ['auth', 'token']):
 		return msgTelegraphToken(update.message)
 
-tele.dispatcher.add_handler(MessageHandler(Filters.text & Filters.entity('url'), export))
+tele.dispatcher.add_handler(MessageHandler(Filters.text & 
+	(Filters.entity('url') | Filters.entity(MessageEntity.TEXT_LINK)), export))
 tele.dispatcher.add_handler(MessageHandler(Filters.command, command))
 
 tele.start_polling()
