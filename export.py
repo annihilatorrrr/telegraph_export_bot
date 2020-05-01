@@ -66,7 +66,7 @@ def exportImp(msg):
 			if not '://' in url:
 				url = "https://" + url
 			result = getTelegraph(msg, url)
-			msg.chat.send_message('%s|[source](%s)' % (result, url), 
+			msg.chat.send_message('%s | [source](%s)' % (result, url), 
 				parse_mode='Markdown')
 
 @log_on_fail(debug_group)
