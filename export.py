@@ -60,33 +60,19 @@ def getTelegraph(msg, url):
 		toSimplified = 'bot_simplify' in msg.text)
 
 def exportImp(msg):
-	new_text = msg.text
-	links = []
 	for item in msg.entities:
-		print(item)
 		if (item["type"] == "url"):
 			url = msg.text[item["offset"]:][:item["length"]]
-			markdown_url = '(%s)' % url
-			if markdown_url in new_text:
-				new_text = new_text.replace('(%s)' % url, '(link)')
-			else:
-				new_text = new_text.replace(url, '[link](%s)' % clearUrl(url))
 			if not '://' in url:
 				url = "https://" + url
-			u = getTelegraph(msg, url)
-			links.append('[%s](%s)' % (u, u))
-	if not links:
-		return
-	if len(links) == 1:
-		new_text = new_text.replace('[link](', '[source](')
-	new_text = escapeMarkdown('|'.join(links) + '|' + new_text)
-	msg.chat.send_message(new_text, parse_mode='Markdown')
-	return new_text
+			msg.chat.send_message(getTelegraph(msg, url))
 
 @log_on_fail(debug_group)
 def export(update, context):
 	msg = update.effective_message
-	print(msg.text)
+	print(msg.text) # log use
+	if '[source]' in msg.text and msg.chat_id < 0:
+		return
 	r = msg.reply_text('recieved')
 	exportImp(msg)
 	r.delete()
