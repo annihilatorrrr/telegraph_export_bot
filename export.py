@@ -65,13 +65,14 @@ def exportImp(msg):
 			url = msg.text[item["offset"]:][:item["length"]]
 			if not '://' in url:
 				url = "https://" + url
-			msg.chat.send_message(getTelegraph(msg, url))
+			result = getTelegraph(msg, url)
+			msg.chat.send_message('%s|[source](%s)' % (result, url), 
+				parse_mode='Markdown')
 
 @log_on_fail(debug_group)
 def export(update, context):
 	msg = update.effective_message
 	print(msg.text) # log use
-	print(msg.text_markdown)
 	if '[source]' in msg.text_markdown and msg.chat_id < 0:
 		return
 	r = msg.reply_text('recieved')
