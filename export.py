@@ -71,7 +71,8 @@ def exportImp(msg):
 def export(update, context):
 	msg = update.effective_message
 	print(msg.text) # log use
-	if '[source]' in msg.text and msg.chat_id < 0:
+	print(msg.markdown_text)
+	if '[source]' in msg.markdown_text and msg.chat_id < 0:
 		return
 	r = msg.reply_text('recieved')
 	exportImp(msg)
