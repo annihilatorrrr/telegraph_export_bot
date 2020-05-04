@@ -7,7 +7,7 @@ from telegram import MessageEntity
 import export_to_telegraph
 from html_telegraph_poster import TelegraphPoster
 import yaml
-from telegram_util import getDisplayUser, matchKey, log_on_fail, getDisplayChat, escapeMarkdown, clearUrl
+from telegram_util import getDisplayUser, matchKey, log_on_fail, getDisplayChat, escapeMarkdown, clearUrl, log
 
 with open('CREDENTIALS') as f:
     CREDENTIALS = yaml.load(f, Loader=yaml.FullLoader)
@@ -72,12 +72,13 @@ def exportImp(msg):
 @log_on_fail(debug_group)
 def export(update, context):
 	msg = update.effective_message
-	print(msg.text) # log use
 	if '[source]' in msg.text_markdown and msg.chat_id < 0:
 		return
+	log('start', msg.text)
 	r = msg.reply_text('recieved')
 	exportImp(msg)
 	r.delete()
+	log('end')
 	source_id, _, _ = getSource(msg)
 	if source_id in delete_original_msg:
 		try:
