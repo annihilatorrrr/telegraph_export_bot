@@ -7,7 +7,7 @@ from telegram import MessageEntity
 import export_to_telegraph
 from html_telegraph_poster import TelegraphPoster
 import yaml
-from telegram_util import getDisplayUser, matchKey, log_on_fail, getDisplayChat, escapeMarkdown, clearUrl, log
+from telegram_util import matchKey, log_on_fail, log
 
 with open('CREDENTIALS') as f:
     CREDENTIALS = yaml.load(f, Loader=yaml.FullLoader)
