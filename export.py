@@ -77,7 +77,10 @@ def export(update, context):
 	if '[source]' in msg.text_markdown and msg.chat_id < 0:
 		return
 	log('start', msg.text)
-	r = msg.reply_text('recieved')
+	try:
+		r = msg.reply_text('recieved')
+	except:
+		return
 	exportImp(msg)
 	r.delete()
 	log('end')
