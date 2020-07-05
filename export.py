@@ -72,14 +72,14 @@ def export(update, context):
 	msg = update.effective_message
 	if '[source]' in msg.text_markdown and msg.chat_id < 0:
 		return
-	try:
-		r = msg.chat.send_message('recieved')
-	except:
-		return
 	if msg.chat.username == 'web_record':
 		tryDelete(msg)
 		if matchKey(msg.text_markdown, ['twitter', 'weibo']):
 			return
+	try:
+		r = msg.chat.send_message('recieved')
+	except:
+		return
 	exportImp(msg)
 	r.delete()
 
