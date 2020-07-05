@@ -7,19 +7,15 @@ from telegram import MessageEntity
 import export_to_telegraph
 from html_telegraph_poster import TelegraphPoster
 import yaml
-from telegram_util import matchKey, log_on_fail, log
+from telegram_util import matchKey, log_on_fail, log, tryDelete
 
 with open('CREDENTIALS') as f:
     CREDENTIALS = yaml.load(f, Loader=yaml.FullLoader)
 tele = Updater(CREDENTIALS['bot_token'], use_context=True)
 
-r = tele.bot.send_message(-1001198682178, 'start')
-r.delete()
-debug_group = r.chat
+debug_group = tele.bot.get_chat(420074357)
 
-known_users = [420074357, 652783030, -1001399998441]
 no_auth_link_users = [-1001399998441]
-delete_original_msg = [-1001399998441]
 
 with open('TELEGRAPH_TOKENS') as f:
 	TELEGRAPH_TOKENS = {}
@@ -56,7 +52,6 @@ def getTelegraph(msg, url):
 	if source_id not in TELEGRAPH_TOKENS:
 		msgTelegraphToken(msg)
 	export_to_telegraph.token = TELEGRAPH_TOKENS[source_id]
-	log('export_to_telegraph.export')
 	return export_to_telegraph.export(url, throw_exception = True, force = True, 
 		toSimplified = 'bot_simplify' in msg.text)
 
@@ -67,29 +62,26 @@ def exportImp(msg):
 			if not '://' in url:
 				url = "https://" + url
 			result = getTelegraph(msg, url)
-			log('got export result')
 			msg.chat.send_message('%s | [source](%s)' % (result, url), 
 				parse_mode='Markdown')
 
 @log_on_fail(debug_group)
 def export(update, context):
+	if update.edited_message or update.edited_channel_post:
+		return
 	msg = update.effective_message
 	if '[source]' in msg.text_markdown and msg.chat_id < 0:
 		return
-	log('start', msg.text)
 	try:
-		r = msg.reply_text('recieved')
+		r = msg.chat.send_message('recieved')
 	except:
 		return
+	if msg.chat.username == 'web_record':
+		tryDelete(msg)
+		if matchKey(msg.text_markdown, ['twitter', 'weibo']):
+			return
 	exportImp(msg)
 	r.delete()
-	log('end')
-	source_id, _, _ = getSource(msg)
-	if source_id in delete_original_msg:
-		try:
-			msg.delete()
-		except:
-			pass
 
 @log_on_fail(debug_group)
 def command(update, context):
