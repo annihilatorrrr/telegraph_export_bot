@@ -73,8 +73,8 @@ def export(update, context):
 	if '[source]' in msg.text_markdown and msg.chat_id < 0:
 		return
 	if msg.chat.username == 'web_record':
-		tryDelete(msg)
 		if matchKey(msg.text_markdown, ['twitter', 'weibo']):
+			tryDelete(msg)
 			return
 	try:
 		r = msg.chat.send_message('recieved')
@@ -82,6 +82,7 @@ def export(update, context):
 		return
 	exportImp(msg)
 	r.delete()
+	tryDelete(msg)
 
 @log_on_fail(debug_group)
 def command(update, context):
