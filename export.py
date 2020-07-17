@@ -74,7 +74,7 @@ def export(update, context):
 		return
 	if msg.chat.username == 'web_record':
 		if (matchKey(msg.text_markdown, ['twitter', 'weibo', 'douban']) and 
-				not matchKey(msg.text_markdown, ['article', 'note']))
+				not matchKey(msg.text_markdown, ['article', 'note'])):
 			tryDelete(msg)
 			return
 	try:
