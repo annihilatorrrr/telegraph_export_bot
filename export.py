@@ -83,7 +83,8 @@ def export(update, context):
 		return
 	exportImp(msg)
 	r.delete()
-	tryDelete(msg)
+	if msg.chat.username == 'web_record':
+		tryDelete(msg)
 
 @log_on_fail(debug_group)
 def command(update, context):
