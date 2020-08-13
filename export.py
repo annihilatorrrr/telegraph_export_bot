@@ -8,6 +8,7 @@ import export_to_telegraph
 from html_telegraph_poster import TelegraphPoster
 import yaml
 from telegram_util import matchKey, log_on_fail, log, tryDelete
+import plain_db
 
 with open('CREDENTIALS') as f:
     CREDENTIALS = yaml.load(f, Loader=yaml.FullLoader)
@@ -16,6 +17,8 @@ tele = Updater(CREDENTIALS['bot_token'], use_context=True)
 debug_group = tele.bot.get_chat(420074357)
 
 no_auth_link_users = [-1001399998441]
+
+no_source_link = plain_db.loadKeyOnlyDB('no_source_link')
 
 with open('TELEGRAPH_TOKENS') as f:
 	TELEGRAPH_TOKENS = {}
@@ -52,8 +55,9 @@ def getTelegraph(msg, url):
 	if source_id not in TELEGRAPH_TOKENS:
 		msgTelegraphToken(msg)
 	export_to_telegraph.token = TELEGRAPH_TOKENS[source_id]
-	return export_to_telegraph.export(url, throw_exception = True, force = True, 
-		toSimplified = 'bot_simplify' in msg.text)
+	return export_to_telegraph.export(url, throw_exception = True, 
+		force = True, toSimplified = 'bot_simplify' in msg.text,
+		noSourceLink = no_source_link.get(msg.chat_id))
 
 def exportImp(msg):
 	for item in msg.entities:
@@ -62,8 +66,11 @@ def exportImp(msg):
 			if not '://' in url:
 				url = "https://" + url
 			result = getTelegraph(msg, url)
-			msg.chat.send_message('%s | [source](%s)' % (result, url), 
-				parse_mode='Markdown')
+			if no_source_link.get(msg.chat_id):
+				msg.chat.send_message(result)
+			else:
+				msg.chat.send_message('%s | [source](%s)' % (result, url), 
+					parse_mode='Markdown')
 
 @log_on_fail(debug_group)
 def export(update, context):
@@ -86,10 +93,24 @@ def export(update, context):
 	if msg.chat.username == 'web_record':
 		tryDelete(msg)
 
+with open('help.md') as f:
+	help_message = f.read()
+
+def toggleSourceLink(msg):
+	result = no_source_link.toggle(msg.chat_id)
+	if result:
+		msg.reply_text('Source Link Off')
+	msg.reply_text('Source Link On')
+
 @log_on_fail(debug_group)
 def command(update, context):
-	if matchKey(update.message.text, ['auth', 'token']):
-		return msgTelegraphToken(update.message)
+	msg = update.message
+	if matchKey(msg.text, ['auth', 'token']):
+		return msgTelegraphToken(msg)
+	if matchKey(msg.text, ['toggle', 'source']):
+		return toggleSourceLink(msg)
+	if msg.chat_id > 0:
+		msg.reply_text(help_message)
 
 tele.dispatcher.add_handler(MessageHandler(Filters.text & 
 	(Filters.entity('url') | Filters.entity(MessageEntity.TEXT_LINK)), export))
