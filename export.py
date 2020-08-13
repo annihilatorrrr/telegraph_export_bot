@@ -57,7 +57,7 @@ def getTelegraph(msg, url):
 	export_to_telegraph.token = TELEGRAPH_TOKENS[source_id]
 	return export_to_telegraph.export(url, throw_exception = True, 
 		force = True, toSimplified = 'bot_simplify' in msg.text,
-		noSourceLink = no_source_link.get(msg.chat_id))
+		noSourceLink = msg.chat_id in no_source_link._db.items)
 
 def exportImp(msg):
 	for item in msg.entities:
@@ -66,7 +66,7 @@ def exportImp(msg):
 			if not '://' in url:
 				url = "https://" + url
 			result = getTelegraph(msg, url)
-			if no_source_link.get(msg.chat_id):
+			if msg.chat_id in no_source_link._db.items:
 				msg.chat.send_message(result)
 			else:
 				msg.chat.send_message('%s | [source](%s)' % (result, url), 
