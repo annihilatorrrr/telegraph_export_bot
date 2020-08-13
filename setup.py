@@ -13,13 +13,6 @@ def setup(arg = ''):
 		
 	RUN_COMMAND = "nohup python3 -u %s.py &" % EXE_FILE
 
-	if arg != 'debug':
-		r = os.system('pip3 install --user -r requirements.txt --upgrade')
-		if r != 0:
-			os.system('curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py')
-			os.system('sudo python3 get-pip.py')
-			os.system('rm get-pip.py')
-			os.system('pip3 install --user -r requirements.txt')
 	try:
 		import yaml
 		with open('TELEGRAPH_TOKENS') as f:
