@@ -7,4 +7,3 @@ commands:
 Can be used in group/channel also.
 
 Github： https://github.com/gaoyunzhi/telegraph_export_bot
-'''
