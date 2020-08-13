@@ -100,7 +100,8 @@ def toggleSourceLink(msg):
 	result = no_source_link.toggle(msg.chat_id)
 	if result:
 		msg.reply_text('Source Link Off')
-	msg.reply_text('Source Link On')
+	else:
+		msg.reply_text('Source Link On')
 
 @log_on_fail(debug_group)
 def command(update, context):
