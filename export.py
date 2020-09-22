@@ -86,7 +86,7 @@ def export(update, context):
 			tryDelete(msg)
 			return
 	try:
-		r = msg.chat.send_message('recieved')
+		r = msg.chat.send_message('received')
 	except:
 		return
 	exportImp(msg)
