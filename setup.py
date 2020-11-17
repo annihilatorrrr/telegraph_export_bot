@@ -4,12 +4,12 @@ import sys
 def kill():
 	os.system("ps aux | grep ython | grep export.py | awk '{print $2}' | xargs kill -9")
 
-def setup(arg = ''):
+def setup():
 	kill()
-	if arg == 'kill':
+	if 'kill' in sys.argv:
 		return
 		
-	RUN_COMMAND = "nohup python3 -u export.py &" % 
+	RUN_COMMAND = "nohup python3 -u export.py &"
 
 	if arg.startswith('debug'):
 		os.system(RUN_COMMAND[6:-2])
@@ -20,7 +20,4 @@ def setup(arg = ''):
 
 
 if __name__ == '__main__':
-	if len(sys.argv) > 1:
-		setup(sys.argv[1])
-	else:
-		setup('')
+	setup()
