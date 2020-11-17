@@ -11,7 +11,7 @@ def setup():
 		
 	RUN_COMMAND = "nohup python3 -u export.py &"
 
-	if arg.startswith('debug'):
+	if 'debug' in sys.argv:
 		os.system(RUN_COMMAND[6:-2])
 	else:
 		os.system(RUN_COMMAND)
