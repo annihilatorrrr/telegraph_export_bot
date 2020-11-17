@@ -56,7 +56,8 @@ def getTelegraph(msg, url):
 		msgTelegraphToken(msg)
 	export_to_telegraph.token = TELEGRAPH_TOKENS[source_id]
 	return export_to_telegraph.export(url, throw_exception = True, 
-		force = True, toSimplified = 'bot_simplify' in msg.text,
+		force = True, toSimplified = (
+			'bot_simplify' in msg.text or msg.text.endswith(' bs')),
 		noSourceLink = str(msg.chat_id) in no_source_link._db.items)
 
 def exportImp(msg):
