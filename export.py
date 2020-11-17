@@ -19,7 +19,7 @@ no_auth_link_users = [-1001399998441] # prevent token leak through @web_record
 
 no_source_link = plain_db.loadKeyOnlyDB('no_source_link')
 
-with open('telegraph_token') as f:
+with open('telegraph_tokens') as f:
 	telegraph_tokens = {}
 	for k, v in yaml.load(f, Loader=yaml.FullLoader).items():
 		telegraph_tokens[int(k)] = v
