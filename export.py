@@ -10,24 +10,23 @@ import yaml
 from telegram_util import matchKey, log_on_fail, log, tryDelete
 import plain_db
 
-with open('CREDENTIALS') as f:
-    CREDENTIALS = yaml.load(f, Loader=yaml.FullLoader)
-tele = Updater(CREDENTIALS['bot_token'], use_context=True)
+with open('token') as f:
+    tele = Updater(f.read().strip(), use_context=True)
 
 debug_group = tele.bot.get_chat(420074357)
 
-no_auth_link_users = [-1001399998441]
+no_auth_link_users = [-1001399998441] # prevent token leak through @web_record
 
 no_source_link = plain_db.loadKeyOnlyDB('no_source_link')
 
-with open('TELEGRAPH_TOKENS') as f:
-	TELEGRAPH_TOKENS = {}
+with open('telegraph_token') as f:
+	telegraph_tokens = {}
 	for k, v in yaml.load(f, Loader=yaml.FullLoader).items():
-		TELEGRAPH_TOKENS[int(k)] = v
+		telegraph_tokens[int(k)] = v
 
 def saveTelegraphTokens():
-	with open('TELEGRAPH_TOKENS', 'w') as f:
-		f.write(yaml.dump(TELEGRAPH_TOKENS, sort_keys=True, indent=2))
+	with open('telegraph_tokens', 'w') as f:
+		f.write(yaml.dump(telegraph_tokens, sort_keys=True, indent=2))
 
 def getSource(msg):
 	if msg.from_user:
@@ -40,24 +39,24 @@ def msgAuthUrl(msg, p):
 
 def msgTelegraphToken(msg):
 	source_id, shortname, longname = getSource(msg)
-	if source_id in TELEGRAPH_TOKENS:
-		p = TelegraphPoster(access_token = TELEGRAPH_TOKENS[source_id])
+	if source_id in telegraph_tokens:
+		p = TelegraphPoster(access_token = telegraph_tokens[source_id])
 	else:
 		p = TelegraphPoster()
 		r = p.create_api_token(shortname, longname)
-		TELEGRAPH_TOKENS[source_id] = r['access_token']
+		telegraph_tokens[source_id] = r['access_token']
 		saveTelegraphTokens()
 	if source_id not in no_auth_link_users:
 		msgAuthUrl(msg, p)
 
 def getTelegraph(msg, url):
 	source_id, _, _ = getSource(msg)
-	if source_id not in TELEGRAPH_TOKENS:
+	if source_id not in telegraph_tokens:
 		msgTelegraphToken(msg)
-	export_to_telegraph.token = TELEGRAPH_TOKENS[source_id]
+	export_to_telegraph.token = telegraph_tokens[source_id]
 	return export_to_telegraph.export(url, throw_exception = True, 
 		force = True, toSimplified = (
-			'bot_simplify' in msg.text or msg.text.endswith(' bs')),
+			'bot_simplify' in msg.text or msg.text.endswith(' s')),
 		noSourceLink = str(msg.chat_id) in no_source_link._db.items)
 
 def exportImp(msg):
