@@ -89,10 +89,16 @@ def export(update, context):
 		r = msg.chat.send_message('received')
 	except:
 		return
-	exportImp(msg)
-	r.delete()
-	if msg.chat.username == 'web_record':
-		tryDelete(msg)
+	try:
+		exportImp(msg)
+		if msg.chat.username == 'web_record':
+			tryDelete(msg)
+	except Exception as e:
+		msg.chat.send_message(str(e))
+		if not matchKey(str(e), ['Content is too big.']):
+			raise e
+	finally:
+		r.delete()
 
 with open('help.md') as f:
 	help_message = f.read()
