@@ -77,7 +77,7 @@ def export(update, context):
 	if update.edited_message or update.edited_channel_post:
 		return
 	msg = update.effective_message
-	if '[source]' in msg.text_markdown and msg.chat_id < 0:
+	if msg.chat_id < 0 and ('source' in msg.text) and ('[source]' in msg.text_markdown):
 		return
 	if msg.chat.username == 'web_record':
 		if (matchKey(msg.text_markdown, ['twitter', 'weibo', 
