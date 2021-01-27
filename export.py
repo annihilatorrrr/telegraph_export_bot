@@ -63,6 +63,7 @@ def exportImp(msg):
 	for item in msg.entities:
 		if (item["type"] == "url"):
 			url = msg.text[item["offset"]:][:item["length"]]
+			print(url, msg.text, item["offset"], item["length"])
 			if not '://' in url:
 				url = "https://" + url
 			result = getTelegraph(msg, url)
