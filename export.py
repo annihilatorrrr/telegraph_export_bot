@@ -7,7 +7,7 @@ from telegram import MessageEntity
 import export_to_telegraph
 from html_telegraph_poster import TelegraphPoster
 import yaml
-from telegram_util import matchKey, log_on_fail, log, tryDelete, autoDestroy, getDisplayChatHtml
+from telegram_util import matchKey, log_on_fail, log, tryDelete, autoDestroy, getBasicLog
 import plain_db
 from bs4 import BeautifulSoup
 
@@ -67,6 +67,7 @@ def exportImp(msg):
 		if 'http' in item.get('href'):
 			url = item.get('href')
 			result = getTelegraph(msg, url)
+			yield result
 			if str(msg.chat_id) in no_source_link._db.items:
 				msg.chat.send_message(result)
 			else:
@@ -91,8 +92,9 @@ def export(update, context):
 	except:
 		return
 	error = ''
+	result = []
 	try:
-		exportImp(msg)
+		result = list(exportImp(msg))
 		if msg.chat.username == 'web_record':
 			tryDelete(msg)
 	except Exception as e:
@@ -100,9 +102,8 @@ def export(update, context):
 		autoDestroy(tmp_msg_2, 0.05)
 		error = ' error: ' + str(e)
 	finally:
-		info_log.send_message('id: %d chat: %s%s content: %s' % (
-			msg.chat.id, getDisplayChatHtml(msg.chat), error, msg.text_html_urled), 
-			parse_mode='html')
+		info_log.send_message(getBasicLog(msg) + error + ' result: ' + ' '.join(result),
+			parse_mode='html', disable_web_page_preview=True)
 		tmp_msg_1.delete()
 
 with open('help.md') as f:
