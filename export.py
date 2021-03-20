@@ -7,13 +7,15 @@ from telegram import MessageEntity
 import export_to_telegraph
 from html_telegraph_poster import TelegraphPoster
 import yaml
-from telegram_util import matchKey, log_on_fail, log, tryDelete
+from telegram_util import matchKey, log_on_fail, log, tryDelete, autoDestroy, getDisplayChatHtml
 import plain_db
+from bs4 import BeautifulSoup
 
 with open('token') as f:
     tele = Updater(f.read().strip(), use_context=True)
 
 debug_group = tele.bot.get_chat(420074357)
+info_log = tele.bot.get_chat(-1001436325054)
 
 no_auth_link_users = [-1001399998441] # prevent token leak through @web_record
 
@@ -60,11 +62,10 @@ def getTelegraph(msg, url):
 		noSourceLink = str(msg.chat_id) in no_source_link._db.items)
 
 def exportImp(msg):
-	for item in msg.entities:
-		if (item["type"] == "url"):
-			url = msg.text[item["offset"]:][:item["length"]]
-			if not '://' in url:
-				url = "https://" + url
+	soup = BeautifulSoup(msg.text_html_urled, 'html.parser')
+	for item in soup.find_all('a'):
+		if 'http' in item.get('href'):
+			url = item.get('href')
 			result = getTelegraph(msg, url)
 			if str(msg.chat_id) in no_source_link._db.items:
 				msg.chat.send_message(result)
@@ -77,7 +78,7 @@ def export(update, context):
 	if update.edited_message or update.edited_channel_post:
 		return
 	msg = update.effective_message
-	if msg.chat_id < 0 and ('source' in msg.text) and ('[source]' in msg.text_markdown):
+	if msg.chat_id < 0 and 'source</a>' in msg.text_html_urled:
 		return
 	if msg.chat.username == 'web_record':
 		if (matchKey(msg.text_markdown, ['twitter', 'weibo', 
@@ -86,19 +87,23 @@ def export(update, context):
 			tryDelete(msg)
 			return
 	try:
-		r = msg.chat.send_message('received')
+		tmp_msg_1 = msg.chat.send_message('received')
 	except:
 		return
+	error = ''
 	try:
 		exportImp(msg)
 		if msg.chat.username == 'web_record':
 			tryDelete(msg)
 	except Exception as e:
-		msg.chat.send_message(str(e))
-		if not matchKey(str(e), ['Content is too big.']):
-			raise e
+		tmp_msg_2 = msg.chat.send_message(str(e))
+		autoDestroy(tmp_msg_2, 0.05)
+		error = ' error: ' + str(e)
 	finally:
-		r.delete()
+		info_log.send_message('id: %d chat: %s%s content: %s' % (
+			msg.chat.id, getDisplayChatHtml(msg.chat), error, msg.text_html_urled), 
+			parse_mode='html')
+		tmp_msg_1.delete()
 
 with open('help.md') as f:
 	help_message = f.read()
