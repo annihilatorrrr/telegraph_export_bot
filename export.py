@@ -119,14 +119,13 @@ def toggleSourceLink(msg):
 def toggleRemoveOrigin(msg):
 	result = remove_origin.toggle(msg.chat_id)
 	if result:
-		msg.reply_text('Remove Original message Off')
-	else:
 		msg.reply_text('Remove Original message On')
+	else:
+		msg.reply_text('Remove Original message Off')
 
 @log_on_fail(debug_group)
 def command(update, context):
-	msg = update.message
-	print(msg)
+	msg = update.message or update.channel_post
 	if matchKey(msg.text, ['auth', 'token']):
 		return msgTelegraphToken(msg)
 	if matchKey(msg.text, ['source', 'tnsl', 'toggle_no_source_link']):
