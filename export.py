@@ -20,6 +20,7 @@ info_log = tele.bot.get_chat(-1001436325054)
 no_auth_link_users = [-1001399998441] # prevent token leak through @web_record
 
 no_source_link = plain_db.loadKeyOnlyDB('no_source_link')
+remove_origin = plain_db.loadKeyOnlyDB('remove_origin')
 
 with open('telegraph_tokens') as f:
 	telegraph_tokens = {}
@@ -85,7 +86,6 @@ def export(update, context):
 		if (matchKey(msg.text_markdown, ['twitter', 'weibo', 
 				'douban', 't.me/']) and 
 				not matchKey(msg.text_markdown, ['article', 'note'])):
-			tryDelete(msg)
 			return
 	try:
 		tmp_msg_1 = msg.chat.send_message('received')
@@ -95,7 +95,7 @@ def export(update, context):
 	result = []
 	try:
 		result = list(exportImp(msg))
-		if msg.chat.username == 'web_record':
+		if str(msg.chat.id) in remove_origin._db.items:
 			tryDelete(msg)
 	except Exception as e:
 		tmp_msg_2 = msg.chat.send_message(str(e))
@@ -116,13 +116,23 @@ def toggleSourceLink(msg):
 	else:
 		msg.reply_text('Source Link On')
 
+def toggleRemoveOrigin(msg):
+	result = remove_origin.toggle(msg.chat_id)
+	if result:
+		msg.reply_text('Remove Original message Off')
+	else:
+		msg.reply_text('Remove Original message On')
+
 @log_on_fail(debug_group)
 def command(update, context):
 	msg = update.message
+	print(msg)
 	if matchKey(msg.text, ['auth', 'token']):
 		return msgTelegraphToken(msg)
-	if matchKey(msg.text, ['toggle', 'source']):
+	if matchKey(msg.text, ['source', 'tnsl', 'toggle_no_source_link']):
 		return toggleSourceLink(msg)
+	if matchKey(msg.text, ['origin', 'trmo', 'toggle_remove_origin']):
+		return toggleRemoveOrigin(msg)
 	if msg.chat_id > 0:
 		msg.reply_text(help_message)
 
