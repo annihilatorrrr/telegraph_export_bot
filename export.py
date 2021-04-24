@@ -60,6 +60,7 @@ def getTelegraph(msg, url):
 	return export_to_telegraph.export(url, throw_exception = True, 
 		force = True, toSimplified = (
 			'bot_simplify' in msg.text or msg.text.endswith(' s')),
+		noAutoConvert = msg.text.endswith(' t') or msg.text.endswith(' noAutoConvert'),
 		noSourceLink = str(msg.chat_id) in no_source_link._db.items)
 
 def exportImp(msg):
