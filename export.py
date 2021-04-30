@@ -10,6 +10,7 @@ import yaml
 from telegram_util import matchKey, log_on_fail, log, tryDelete, autoDestroy, getBasicLog
 import plain_db
 from bs4 import BeautifulSoup
+import album_sender
 
 with open('token') as f:
     tele = Updater(f.read().strip(), use_context=True)
@@ -52,6 +53,13 @@ def msgTelegraphToken(msg):
 	if source_id not in no_auth_link_users:
 		msgAuthUrl(msg, p)
 
+
+def getAlbum(msg, url):
+	if msg.text.endswith(' f') or msg.text.endswith(' full'):
+		return export_to_telegraph.getAlbum(url, word_limit=1024, paragraph_limit=20)
+	if msg.text.endswith(' b') or msg.text.endswith(' brief'):
+		return export_to_telegraph.getAlbum(url)
+
 def getTelegraph(msg, url):
 	source_id, _, _ = getSource(msg)
 	if source_id not in telegraph_tokens:
@@ -68,6 +76,10 @@ def exportImp(msg):
 	for item in soup.find_all('a'):
 		if 'http' in item.get('href'):
 			url = item.get('href')
+			album = getAlbum(msg, url)
+			if album:
+				album_sender.send_v2(msg.chat, album)
+				continue
 			result = getTelegraph(msg, url)
 			yield result
 			if str(msg.chat_id) in no_source_link._db.items:
