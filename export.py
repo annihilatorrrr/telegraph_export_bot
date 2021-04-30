@@ -55,7 +55,7 @@ def msgTelegraphToken(msg):
 
 
 def getAlbum(msg, url):
-	if msg.text.endswith(' f') or msg.text.endswith(' full'):
+	if msg.text.endswith(' f') or msg.text.endswith(' full') or msg.text.endswith(' l'):
 		return export_to_telegraph.getAlbum(url, word_limit=1000, paragraph_limit=20, append_source=True, append_url=False)
 	if msg.text.endswith(' b') or msg.text.endswith(' brief'):
 		return export_to_telegraph.getAlbum(url, append_source=True, append_url=False)
