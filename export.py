@@ -111,8 +111,11 @@ def export(update, context):
 		if str(msg.chat.id) in remove_origin._db.items:
 			tryDelete(msg)
 	except Exception as e:
-		tmp_msg_2 = msg.chat.send_message(str(e))
-		autoDestroy(tmp_msg_2, 0.05)
+		try:
+			tmp_msg_2 = msg.chat.send_message(str(e)) 
+			autoDestroy(tmp_msg_2, 0.05)
+		except:
+			... # In flood case, this would fail also
 		error = ' error: ' + str(e)
 	finally:
 		info_log.send_message(getBasicLog(msg) + error + ' result: ' + ' '.join(result),
