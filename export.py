@@ -118,8 +118,11 @@ def export(update, context):
 			... # In flood case, this would fail also
 		error = ' error: ' + str(e)
 	finally:
-		info_log.send_message(getBasicLog(msg) + error + ' result: ' + ' '.join(result),
-			parse_mode='html', disable_web_page_preview=True)
+		log_message = getBasicLog(msg) + error + ' result: ' + ' '.join(result)
+		try:
+			info_log.send_message(log_message, parse_mode='html', disable_web_page_preview=True)
+		except:
+			info_log.send_message(log_message, disable_web_page_preview=True)
 		tmp_msg_1.delete()
 
 with open('help.md') as f:
