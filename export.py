@@ -95,11 +95,6 @@ def export(update, context):
 	msg = update.effective_message
 	if msg.chat_id < 0 and 'source</a>' in msg.text_html_urled:
 		return
-	if msg.chat.username == 'web_record':
-		if (matchKey(msg.text_markdown, ['twitter', 'weibo', 
-				'douban', 't.me/']) and 
-				not matchKey(msg.text_markdown, ['article', 'note'])):
-			return
 	try:
 		tmp_msg_1 = msg.chat.send_message('received')
 	except:
